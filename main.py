@@ -28,12 +28,44 @@ def get_connected_attendees(attendee_id):
     driver.close()
     return record
 
+# Menu Option 5
+def add_attendee_connection(id1, id2):
+    check_query = """
+    MATCH (a:Attendee {AttendeeID: $id1})-[:CONNECTED_TO]-
+          (b:Attendee {AttendeeID: $id2})
+    RETURN a
+    """
+
+    create_query = """
+    MATCH (a:Attendee {AttendeeID: $id1}),
+          (b:Attendee {AttendeeID: $id2})
+    CREATE (a)-[:CONNECTED_TO]->(b)
+    """
+
+    driver = get_neo4j_driver()
+
+    with driver.session() as session:
+        # Check if connection already exists
+        existing = session.run(check_query, id1=int(id1), id2=int(id2)).single()
+
+        if existing:
+            driver.close()
+            return "exists"
+
+        # Create new connection
+        session.run(create_query, id1=int(id1), id2=int(id2))
+
+    driver.close()
+    return "created"
+
+
 ## Menu Loop
 while True:
     print("\n=== Main Menu ===")
     print("1. Option One")
     print("2. Option Two")
     print("4. View Connected Attendees")
+    print("5. Add Attendee Connection")
     print("x. Exit")
 
     choice = input("Enter your choice: ")
@@ -52,8 +84,6 @@ while True:
             continue
 
         record = get_connected_attendees(attendee_id)
-print("DEBUG: record is:", record)
-
 
         if record is None:
             print("Attendee not found in Neo4j")
@@ -68,6 +98,29 @@ print("DEBUG: record is:", record)
         else:
             for connected_id in connections:
                 print(f"- Attendee {connected_id}")
+
+        input("\nPress Enter to return to the menu...")
+
+    elif choice == "5":
+        id1 = input("Enter first attendee ID: ")
+        id2 = input("Enter second attendee ID: ")
+
+        if not id1.isdigit() or not id2.isdigit():
+            print("Attendee IDs must be numeric")
+            continue
+
+        if id1 == id2:
+            print("An attendee cannot be connected to themselves")
+            continue
+
+        result = add_attendee_connection(id1, id2)
+
+        if result == "exists":
+            print("These attendees are already connected")
+        else:
+            print("Connection successfully added")
+
+        input("\nPress Enter to return to the menu...")
 
     elif choice.lower() == "x":
         print("Exiting program...")
