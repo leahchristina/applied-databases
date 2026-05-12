@@ -1,14 +1,56 @@
-# Importing neo4j connection helper
+# Importing neo4j connection helper & MySQL Connector
 from numpy import record
-
 from neo4j import GraphDatabase
+import mysql.connector
 
+# Neo4j helper function
 def get_neo4j_driver():
     uri = "bolt://localhost:7687"
     username = "neo4j"
     password = "glencoagh"  # same one you set in Neo4j Desktop
 
     return GraphDatabase.driver(uri, auth=(username, password))
+
+# MySQL Helper Function
+def get_mysql_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="root",
+        database="appdbproj",
+        port=3306
+    )
+
+# Menu Option 1 
+def view_speakers_and_sessions():
+    search = input("Enter speaker name (or part of name): ")
+
+    query = """
+    SELECT
+        s.speakerName,
+        s.sessionTitle,
+        r.roomName
+    FROM session s
+    JOIN room r ON s.roomID = r.roomID
+    WHERE s.speakerName LIKE %s
+    """
+
+    connection = get_mysql_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(query, (f"%{search}%",))
+    results = cursor.fetchall()
+
+    if len(results) == 0:
+        print("No speakers match that search.")
+    else:
+        for speaker, session, room in results:
+            print(f"\nSpeaker: {speaker}")
+            print(f"Session: {session}")
+            print(f"Room: {room}")
+
+    cursor.close()
+    connection.close()
 
 # Menu Option 4
 def get_connected_attendees(attendee_id):
@@ -62,7 +104,7 @@ def add_attendee_connection(id1, id2):
 ## Menu Loop
 while True:
     print("\n=== Main Menu ===")
-    print("1. Option One")
+    print("1. View Speakers & Sessions")
     print("2. Option Two")
     print("4. View Connected Attendees")
     print("5. Add Attendee Connection")
@@ -71,7 +113,8 @@ while True:
     choice = input("Enter your choice: ")
 
     if choice == "1":
-        print("You chose option 1")
+        view_speakers_and_sessions()
+        input("\nPress Enter to return to the menu...")
 
     elif choice == "2":
         print("You chose option 2")
