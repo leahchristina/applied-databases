@@ -52,6 +52,65 @@ def view_speakers_and_sessions():
     cursor.close()
     connection.close()
 
+# Menu Option 2 
+def view_attendees_by_company():
+    company_id = input("Enter company ID: ")
+
+    if not company_id.isdigit():
+        print("Invalid company ID")
+        return
+
+    company_id = int(company_id)
+
+    connection = get_mysql_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT companyName FROM company WHERE companyID = %s",
+        (company_id,)
+    )
+    company = cursor.fetchone()
+
+    if not company:
+        print("Company does not exist")
+        cursor.close()
+        connection.close()
+        return
+
+    print(f"\nCompany: {company[0]}")
+
+    query = """
+    SELECT
+        a.attendeeName,
+        a.attendeeDOB,
+        s.sessionTitle,
+        s.speakerName,
+        s.sessionDate,
+        r.roomName
+    FROM attendee a
+    JOIN registration reg ON a.attendeeID = reg.attendeeID
+    JOIN session s ON reg.sessionID = s.sessionID
+    JOIN room r ON s.roomID = r.roomID
+    WHERE a.attendeeCompanyID = %s
+    """
+
+    cursor.execute(query, (company_id,))
+    results = cursor.fetchall()
+
+    if not results:
+        print("No attendees for this company")
+    else:
+        for row in results:
+            print(f"\nName: {row[0]}")
+            print(f"DOB: {row[1]}")
+            print(f"Session: {row[2]}")
+            print(f"Speaker: {row[3]}")
+            print(f"Date: {row[4]}")
+            print(f"Room: {row[5]}")
+
+    cursor.close()
+    connection.close()
+
 # Menu Option 4
 def get_connected_attendees(attendee_id):
     query = """ 
@@ -105,20 +164,24 @@ def add_attendee_connection(id1, id2):
 while True:
     print("\n=== Main Menu ===")
     print("1. View Speakers & Sessions")
-    print("2. Option Two")
+    print("2. View Attendees by Company")
     print("4. View Connected Attendees")
     print("5. Add Attendee Connection")
     print("x. Exit")
 
     choice = input("Enter your choice: ")
 
+    # OPTION 1
     if choice == "1":
         view_speakers_and_sessions()
         input("\nPress Enter to return to the menu...")
 
+    # OPTION 2
     elif choice == "2":
-        print("You chose option 2")
+        view_attendees_by_company()
+        input("\nPress Enter to return to the menu...")
 
+    # OPTION 4
     elif choice == "4":
         attendee_id = input("Enter attendee ID: ")
 
@@ -144,6 +207,7 @@ while True:
 
         input("\nPress Enter to return to the menu...")
 
+    # OPTION 5
     elif choice == "5":
         id1 = input("Enter first attendee ID: ")
         id2 = input("Enter second attendee ID: ")
@@ -165,9 +229,12 @@ while True:
 
         input("\nPress Enter to return to the menu...")
 
+    # EXIT
     elif choice.lower() == "x":
         print("Exiting program...")
         break
 
+    # INVALID INPUT
     else:
         print("Invalid choice, please try again")
+
