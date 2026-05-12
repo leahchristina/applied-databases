@@ -111,6 +111,71 @@ def view_attendees_by_company():
     cursor.close()
     connection.close()
 
+# Menu Option 3 
+def add_new_attendee():
+    attendee_id = input("Enter attendee ID: ")
+    name = input("Enter attendee name: ")
+    dob = input("Enter DOB (YYYY-MM-DD): ")
+    gender = input("Enter gender (Male/Female): ")
+    company_id = input("Enter company ID: ")
+
+    # Validate ID
+    if not attendee_id.isdigit():
+        print("Invalid attendee ID")
+        return
+
+    # Validate company ID
+    if not company_id.isdigit():
+        print("Invalid company ID")
+        return
+
+    # Validate gender
+    if gender not in ["Male", "Female"]:
+        print("Invalid gender")
+        return
+
+    attendee_id = int(attendee_id)
+    company_id = int(company_id)
+
+    connection = get_mysql_connection()
+    cursor = connection.cursor()
+
+    # Check if attendee already exists
+    cursor.execute(
+        "SELECT * FROM attendee WHERE attendeeID = %s",
+        (attendee_id,)
+    )
+    if cursor.fetchone():
+        print("Attendee ID already exists")
+        cursor.close()
+        connection.close()
+        return
+
+    # Check if company exists
+    cursor.execute(
+        "SELECT * FROM company WHERE companyID = %s",
+        (company_id,)
+    )
+    if not cursor.fetchone():
+        print("Invalid Company ID")
+        cursor.close()
+        connection.close()
+        return
+
+    # Insert new attendee
+    query = """
+    INSERT INTO attendee (attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+
+    cursor.execute(query, (attendee_id, name, dob, gender, company_id))
+    connection.commit()
+
+    print("Attendee successfully added")
+
+    cursor.close()
+    connection.close()
+
 # Menu Option 4
 def get_connected_attendees(attendee_id):
     query = """ 
@@ -165,6 +230,7 @@ while True:
     print("\n=== Main Menu ===")
     print("1. View Speakers & Sessions")
     print("2. View Attendees by Company")
+    print("3. Add New Attendee")
     print("4. View Connected Attendees")
     print("5. Add Attendee Connection")
     print("x. Exit")
@@ -180,6 +246,11 @@ while True:
     elif choice == "2":
         view_attendees_by_company()
         input("\nPress Enter to return to the menu...")
+
+    # OPTION 3
+    elif choice == "3":
+        add_new_attendee()
+        input ("\nPress Enter to rerturn to the menu...")
 
     # OPTION 4
     elif choice == "4":
