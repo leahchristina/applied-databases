@@ -265,7 +265,7 @@ def view_rooms():
 def view_sessions_by_date():
     date = input("Enter session date (YYYY-MM-DD): ")
 
-    # ✅ Validate date format
+    # Validate date format
     try:
         datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
@@ -300,7 +300,65 @@ def view_sessions_by_date():
     cursor.close()
     connection.close()
 
-## 9 - FINAL MENU LOOP
+# 9 - MENU OPTION 8 - CHECK SESSION REGISTRATION (INNOVATION)
+def check_registration():
+    attendee_id = input("Enter attendee ID: ")
+
+    # validate input
+    if not attendee_id.isdigit():
+        print("Invalid attendee ID")
+        return
+
+    attendee_id = int(attendee_id)
+
+    connection = get_mysql_connection()
+    cursor = connection.cursor()
+
+    # Check attendee exists
+    cursor.execute(
+        "SELECT attendeeName FROM attendee WHERE attendeeID = %s",
+        (attendee_id,)
+    )
+    attendee = cursor.fetchone()
+
+    if not attendee:
+        print("Attendee does not exist")
+        cursor.close()
+        connection.close()
+        return
+
+    print(f"\nRegistrations for {attendee[0]}:")
+
+    # Get registered sessions
+    query = """
+    SELECT
+        s.sessionTitle,
+        s.speakerName,
+        s.sessionDate,
+        r.roomName
+    FROM registration reg
+    JOIN session s ON reg.sessionID = s.sessionID
+    JOIN room r ON s.roomID = r.roomID
+    WHERE reg.attendeeID = %s
+    """
+
+    cursor.execute(query, (attendee_id,))
+    results = cursor.fetchall()
+
+    if not results:
+        print("No registrations found for this attendee")
+    else:
+        for title, speaker, date, room in results:
+            print(f"\nSession: {title}")
+            print(f"Speaker: {speaker}")
+            print(f"Date: {date}")
+            print(f"Room: {room}")
+
+    cursor.close()
+    connection.close()
+
+
+## 10 - MENU LOOP
 while True:
     print("\n=== Main Menu ===")
     print("1. View Speakers & Sessions")
@@ -310,6 +368,7 @@ while True:
     print("5. Add Attendee Connection")
     print("6. View Rooms")
     print("7. View Sessions by Date")
+    print("8. Check Attendee Registration")
     print("x. Exit")
 
     choice = input("Enter your choice: ")
@@ -385,6 +444,11 @@ while True:
     # OPTION 7
     elif choice == "7":
         view_sessions_by_date()
+
+    # OPTION 8
+    elif choice == "8":
+        check_registration()
+
 
     # EXIT
     elif choice.lower() == "x":
