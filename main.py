@@ -1,8 +1,10 @@
+# 1 - IMPORTS
 # Importing neo4j connection helper & MySQL Connector
 from numpy import record
 from neo4j import GraphDatabase
 import mysql.connector
 
+# 2 - DATABASE CONNECTIONS
 # Neo4j helper function
 def get_neo4j_driver():
     uri = "bolt://localhost:7687"
@@ -21,7 +23,7 @@ def get_mysql_connection():
         port=3306
     )
 
-# Menu Option 1 
+# 3 - MENU OPTION 1
 def view_speakers_and_sessions():
     search = input("Enter speaker name (or part of name): ")
 
@@ -52,7 +54,7 @@ def view_speakers_and_sessions():
     cursor.close()
     connection.close()
 
-# Menu Option 2 
+# 4 - MENU OPTION 2
 def view_attendees_by_company():
     company_id = input("Enter company ID: ")
 
@@ -111,7 +113,7 @@ def view_attendees_by_company():
     cursor.close()
     connection.close()
 
-# Menu Option 3 
+# 5 - MENU OPTION 3
 def add_new_attendee():
     attendee_id = input("Enter attendee ID: ")
     name = input("Enter attendee name: ")
@@ -176,7 +178,7 @@ def add_new_attendee():
     cursor.close()
     connection.close()
 
-# Menu Option 4
+# SECTION 6 - MENU OPTION 4 & 5
 def get_connected_attendees(attendee_id):
     query = """ 
     MATCH (a:Attendee {AttendeeID: $attendee_id})
@@ -224,7 +226,7 @@ def add_attendee_connection(id1, id2):
     driver.close()
     return "created"
 
-# Menu Option 6
+# 7 - MENU OPTION 6
 def view_rooms():
     connection = get_mysql_connection()
     cursor = connection.cursor()
@@ -252,7 +254,7 @@ def view_rooms():
     cursor.close()
     connection.close()
 
-## Menu Loop
+## 8 - FINAL MENU LOOP
 while True:
     print("\n=== Main Menu ===")
     print("1. View Speakers & Sessions")
