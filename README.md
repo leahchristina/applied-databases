@@ -1,5 +1,5 @@
 # applied-databases
-Repository for my final project of the Applied Databases module.
+**Repository for my final project of the Applied Databases module.**
 This project is a menu-driven Python application that connects to both MySQL and Neo4j.
 
 MySQL stores the structured conference data such as attendees, sessions, and rooms.
@@ -8,28 +8,28 @@ Neo4j stores the connections between attendees.
 The user interacts with the system through a command-line menu.
 
 ## Menu Options & Functions
-1 – View Speakers & Sessions:
+1 – **View Speakers & Sessions**:
    Displays speaker name, session title, and room.
 
-2 – View Attendees by Company:
+2 – **View Attendees by Company**:
    Displays all attendees from a company and details of sessions attended.
 
-3 – Add New Attendee:
+3 – **Add New Attendee**:
    Adds a new attendee after validation checks.
 
-4 – View Connected Attendees:
+4 – **View Connected Attendees**:
    Shows all connections for a given attendee using Neo4j.
 
-5 – Add Attendee Connection:
+5 – **Add Attendee Connection**:
    Creates a new relationship between attendees.
 
-6 – View Rooms:
+6 – **View Rooms**:
    Displays all rooms and their capacities.
 
-7 - View Sessions By Date:
+7 - **View Sessions By Date**:
     Shows all sessions taking place on a date inputted by the user.
 
-8 - Check Attendee Registration:
+8 - **Check Attendee Registration**:
     Displays all sessions an Attendee ID is registered to upon input.
 
 ## How to Run
