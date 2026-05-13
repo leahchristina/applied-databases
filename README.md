@@ -26,6 +26,12 @@ The user interacts with the system through a command-line menu.
 6 – View Rooms:
    Displays all rooms and their capacities.
 
+7 - View Sessions By Date:
+    Shows all sessions taking place on a date inputted by the user.
+
+8 - Check Attendee Registration:
+    Displays all sessions an Attendee ID is registered to upon input.
+
 ## How to Run
 How to Run the Program:
 1. Ensure MySQL and Neo4j Desktop are running
@@ -46,6 +52,6 @@ How to Run the Program:
 ## Challenges
 - Understanding Neo4j vs MySQL differences
 - Handling joins across multiple tables in MySQL
-- Debugging connection and configuration issues
+- Debugging connection and configuration issues as I am new to Neo4j.
 
 This project demonstrates the ability to integrate multiple database systems into a single Python application while handling user input, validation, and data processing.
