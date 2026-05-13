@@ -3,6 +3,7 @@
 from numpy import record
 from neo4j import GraphDatabase
 import mysql.connector
+from datetime import datetime
 
 # 2 - DATABASE CONNECTIONS
 # Neo4j helper function
@@ -97,7 +98,13 @@ def view_attendees_by_company():
     """
 
     cursor.execute(query, (company_id,))
-    results = cursor.fetchall()
+    results = cursor.fetchall() 
+    
+# Innovation: count unique attendees - as attendees can attend multiple sessions it gives a clearer overview of the attendees
+    unique_attendees = set(row[0] for row in results)
+
+    print(f"Total Attendees: {len(unique_attendees)}")
+
 
     if not results:
         print("No attendees for this company")
@@ -178,7 +185,7 @@ def add_new_attendee():
     cursor.close()
     connection.close()
 
-# SECTION 6 - MENU OPTION 4 & 5
+# 6 - MENU OPTION 4 & 5
 def get_connected_attendees(attendee_id):
     query = """ 
     MATCH (a:Attendee {AttendeeID: $attendee_id})
@@ -254,7 +261,46 @@ def view_rooms():
     cursor.close()
     connection.close()
 
-## 8 - FINAL MENU LOOP
+## 8 - MENU OPTION 7 (VIEW SESSIONS BY DATE)
+def view_sessions_by_date():
+    date = input("Enter session date (YYYY-MM-DD): ")
+
+    # ✅ Validate date format
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        print("Invalid date format. Please use YYYY-MM-DD")
+        return
+
+    connection = get_mysql_connection()
+    cursor = connection.cursor()
+
+    query = """
+    SELECT
+        s.sessionTitle,
+        s.speakerName,
+        r.roomName
+    FROM session s
+    JOIN room r ON s.roomID = r.roomID
+    WHERE s.sessionDate = %s
+    """
+
+    cursor.execute(query, (date,))
+    results = cursor.fetchall()
+
+    if not results:
+        print("No sessions found for this date")
+    else:
+        print(f"\nSessions on {date}:")
+        for title, speaker, room in results:
+            print(f"\nSession: {title}")
+            print(f"Speaker: {speaker}")
+            print(f"Room: {room}")
+
+    cursor.close()
+    connection.close()
+
+## 9 - FINAL MENU LOOP
 while True:
     print("\n=== Main Menu ===")
     print("1. View Speakers & Sessions")
@@ -263,6 +309,7 @@ while True:
     print("4. View Connected Attendees")
     print("5. Add Attendee Connection")
     print("6. View Rooms")
+    print("7. View Sessions by Date")
     print("x. Exit")
 
     choice = input("Enter your choice: ")
@@ -334,6 +381,10 @@ while True:
     elif choice == "6":
         view_rooms()
         input("\nPress Enter to return to the menu...")
+
+    # OPTION 7
+    elif choice == "7":
+        view_sessions_by_date()
 
     # EXIT
     elif choice.lower() == "x":

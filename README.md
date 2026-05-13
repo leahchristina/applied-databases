@@ -8,34 +8,33 @@ Neo4j stores the connections between attendees.
 The user interacts with the system through a command-line menu.
 
 ## Menu Options & Functions
-1 – View Speakers & Sessions
+1 – View Speakers & Sessions:
    Displays speaker name, session title, and room.
 
-2 – View Attendees by Company
+2 – View Attendees by Company:
    Displays all attendees from a company and details of sessions attended.
 
-3 – Add New Attendee
+3 – Add New Attendee:
    Adds a new attendee after validation checks.
 
-4 – View Connected Attendees
+4 – View Connected Attendees:
    Shows all connections for a given attendee using Neo4j.
 
-5 – Add Attendee Connection
+5 – Add Attendee Connection:
    Creates a new relationship between attendees.
 
-6 – View Rooms
+6 – View Rooms:
    Displays all rooms and their capacities.
 
 ## How to Run
 How to Run the Program:
-
 1. Ensure MySQL and Neo4j Desktop are running
 2. Start the Neo4j database (appdbprojNeo4j)
 3. Ensure MySQL database (appdbproj) is available
 4. Open a terminal in the project folder
 5. Run the program using:
 
-   python main.py
+   *python main.py*
 
 6. Follow the on-screen menu prompts
 
