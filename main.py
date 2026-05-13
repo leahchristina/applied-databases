@@ -224,6 +224,33 @@ def add_attendee_connection(id1, id2):
     driver.close()
     return "created"
 
+# Menu Option 6
+def view_rooms():
+    connection = get_mysql_connection()
+    cursor = connection.cursor()
+
+    query = """
+    SELECT
+        roomID,
+        roomName,
+        capacity
+    FROM room
+    """
+
+    cursor.execute(query)
+    results = cursor.fetchall()
+
+    if not results:
+        print("No rooms found")
+    else:
+        print("\n=== Rooms ===")
+        for room_id, room_name, capacity in results:
+            print(f"\nRoom ID: {room_id}")
+            print(f"Room Name: {room_name}")
+            print(f"Capacity: {capacity}")
+
+    cursor.close()
+    connection.close()
 
 ## Menu Loop
 while True:
@@ -233,6 +260,7 @@ while True:
     print("3. Add New Attendee")
     print("4. View Connected Attendees")
     print("5. Add Attendee Connection")
+    print("6. View Rooms")
     print("x. Exit")
 
     choice = input("Enter your choice: ")
@@ -298,6 +326,11 @@ while True:
         else:
             print("Connection successfully added")
 
+        input("\nPress Enter to return to the menu...")
+
+    # OPTION 6
+    elif choice == "6":
+        view_rooms()
         input("\nPress Enter to return to the menu...")
 
     # EXIT
